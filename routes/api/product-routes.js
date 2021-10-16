@@ -63,14 +63,14 @@ router.post('/', (req, res) => {
 		price: req.body.price,
 		stock: req.body.stock,
 		category_id: req.body.category_id,
-		tagsId: req.body.tagIds
+		tagIds: req.body.tagIds
 	})
 	.then((product) => {
-		if (req.body.tagIds.length) {
-			const productTagIdArr = req.body.tagIds.map((tag_id) => {
+		if (!req.body.tagIds.length) {
+			const productTagIdArr = req.body.tagIds.map((tagIds) => {
 				return {
 					product_id: product.id,
-					tag_id
+					tagIds
 				};
 			});
 			return ProductTag.bulkCreate(productTagIdArr);
@@ -89,7 +89,7 @@ router.put('/:id', (req, res) => {
 	Product.update(req.body, {
 		where: {
 			id: req.params.id,
-		},
+		}
 	})
 	.then((product) => {
 		return ProductTag.findAll({ where: { product_id: req.params.id } });
@@ -114,6 +114,7 @@ router.put('/:id', (req, res) => {
 	})
 	.then((updatedProductTags) => res.json(updatedProductTags))
 	.catch((err) => {
+		console.log(err);
 		res.status(400).json(err);
 	});
 });
